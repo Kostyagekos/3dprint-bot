@@ -125,6 +125,8 @@ async def on_shutdown(app):
 
 async def create_app():
     logging.basicConfig(level=logging.INFO)
+    print("🟢 create_app() called")
+
     app = web.Application()
     app["bot"] = bot
 
@@ -132,10 +134,14 @@ async def create_app():
     dp.shutdown.register(on_shutdown)
 
     SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=WEBHOOK_PATH)
+    print("✅ Webhook handler registered at", WEBHOOK_PATH)
+
     setup_application(app, dp)
     return app
+
 
 if __name__ == "__main__":
     app = asyncio.run(create_app())
     web.run_app(app, host="0.0.0.0", port=10000)
+
 
