@@ -7,7 +7,7 @@ import asyncio
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.enums import ParseMode
-from aiogram.types import Message, CallbackQuery, InputFile
+from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
@@ -71,7 +71,7 @@ async def handle_model(message: Message):
             "volume": volume,
             "screenshot": screenshot_path}
 
-        await message.answer_photo(InputFile(path_or_bytesio=screenshot_path, filename="screenshot.png"), caption=f"📦 Объем модели: {volume:.2f} см³")
+        await message.answer_photo(FSInputFile(path_or_bytesio=screenshot_path, filename="screenshot.png"), caption=f"📦 Объем модели: {volume:.2f} см³")
         await message.answer("Сколько копий нужно?")
     except Exception as e:
         logging.exception(e)
