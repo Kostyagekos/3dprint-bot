@@ -61,13 +61,8 @@ async def handle_model(message: Message):
         mesh = trimesh.load(filename, force='mesh')
         if not isinstance(mesh, trimesh.Trimesh):
             raise ValueError("Загруженный файл не является mesh-объектом")
+
         volume = mesh.volume / 1000
-
-except Exception as e:
-    logging.exception(e)
-    await message.answer("❌ Не удалось загрузить модель. Возможно, файл не является STL mesh.")
-    return
-
         screenshot_path = filename.replace('.stl', '.png')
         render_model_screenshot(filename, screenshot_path)
 
