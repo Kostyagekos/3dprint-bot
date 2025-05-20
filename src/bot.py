@@ -73,8 +73,9 @@ async def handle_model(message: Message):
         await message.answer_photo(InputFile(screenshot_path), caption=f"📦 Объем модели: {volume:.2f} см³")
         await message.answer("Сколько копий нужно?")
     except Exception as e:
-        logging.exception(e)
-        await message.answer("❌ Ошибка обработки STL-файла.")
+    logging.exception(e)
+    print(f"❌ Ошибка загрузки STL: {e}")
+    await message.answer("❌ Ошибка обработки STL-файла.")
 
 @dp.message(lambda m: m.from_user.id in user_data and "quantity" not in user_data[m.from_user.id])
 async def handle_quantity(message: Message):
