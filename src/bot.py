@@ -110,7 +110,13 @@ async def handle_technology(callback: CallbackQuery):
 
 # ========== Webhook запуск ==========
 
-# ========== WEBHOOK сервер ==========
+# ========== Webhook ==========
+
+from aiohttp import web
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
+
+WEBHOOK_PATH = "/webhook"
+
 async def on_startup(app):
     await bot.set_webhook(f"{WEBHOOK_URL}{WEBHOOK_PATH}")
 
@@ -125,7 +131,8 @@ async def create_app():
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)
 
-    SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path="/webhook")
+    # Регистрируем /webhook !!!
+    SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=WEBHOOK_PATH)
     setup_application(app, dp)
     return app
 
