@@ -21,7 +21,7 @@ import trimesh
 load_dotenv()
 API_TOKEN = os.getenv("TELEGRAM_API_TOKEN")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL")
-WEBHOOK_PATH = "/webhook"
+
 
 bot = Bot(token=API_TOKEN, parse_mode=ParseMode.HTML)
 dp = Dispatcher(storage=MemoryStorage())
