@@ -105,10 +105,8 @@ async def handle_technology(callback: CallbackQuery):
     price = total_volume * PRICES[tech]
 
     await callback.message.answer(
-        f"✅ Технология: {tech}
-📦 Объём: {total_volume:.2f} см³
-💰 Цена: {price:.2f} грн"
-    )
+    f"✅ Технология: {tech}\n📦 Объём: {total_volume:.2f} см³\n💰 Цена: {price:.2f} грн"
+)
 
     append_order_row({
         "user_id": user_id,
