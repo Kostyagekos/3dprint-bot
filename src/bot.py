@@ -67,8 +67,7 @@ async def handle_model(message: Message):
         user_data[user_id] = {
             "filename": filename,
             "volume": volume,
-            "screenshot": screenshot_path
-        }
+            "screenshot": screenshot_path}
 
         await message.answer_photo(InputFile(screenshot_path), caption=f"📦 Объем модели: {volume:.2f} см³")
         await message.answer("Сколько копий нужно?")
