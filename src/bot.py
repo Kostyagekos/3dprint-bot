@@ -7,17 +7,14 @@ import asyncio
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.enums import ParseMode
-from aiogram.types import Message, CallbackQuery, FSInputFile
+from aiogram.types import Message, CallbackQuery, InputFile
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp import web
-import sqlite3
 from dotenv import load_dotenv
 
 from renderer import render_model_screenshot
-# render_model_screenshot(filename, screenshot_path)
-screenshot_path = "stub.png"  # или заглушка
 from gsheet import append_order_row
 import trimesh
 
@@ -29,25 +26,6 @@ WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 
 bot = Bot(token=API_TOKEN, parse_mode=ParseMode.HTML)
 dp = Dispatcher(storage=MemoryStorage())
-
-def load_prices():
-    conn = sqlite3.connect("settings.db")
-    cur = conn.cursor()
-    cur.execute("SELECT tech, price FROM prices")
-    result = dict(cur.fetchall())
-    conn.close()
-    return result
-
-def update_price(tech, new_price):
-    conn = sqlite3.connect("settings.db")
-    cur = conn.cursor()
-    cur.execute("UPDATE prices SET price = ? WHERE tech = ?", (new_price, tech))
-    conn.commit()
-    conn.close()
-
-PRICES = load_prices()
-price_change_state = {}
-
 
 PRICES = {
     "FDM": 2.0,
@@ -89,9 +67,10 @@ async def handle_model(message: Message):
         user_data[user_id] = {
             "filename": filename,
             "volume": volume,
-            "screenshot": screenshot_path}
+            "screenshot": screenshot_path
+        }
 
-        await message.answer_photo(FSInputFile(screenshot_path, filename="screenshot.png"), caption=f"📦 Объем модели: {volume:.2f} см³")
+        await message.answer_photo(InputFile(screenshot_path), caption=f"📦 Объем модели: {volume:.2f} см³")
         await message.answer("Сколько копий нужно?")
     except Exception as e:
         logging.exception(e)
@@ -111,16 +90,24 @@ async def handle_quantity(message: Message):
 
     await message.answer(f"Вы указали {qty} шт. Выберите технологию:", reply_markup=kb.as_markup())
 
+
 @dp.callback_query(F.data.startswith("tech_"))
 async def handle_technology(callback: CallbackQuery):
     tech = callback.data.split("_")[1]
     user_id = callback.from_user.id
-    data = user_data[user_id]
+    data = user_data.get(user_id)
+    if not data or "volume" not in data:
+        await callback.message.answer("❌ Сначала отправьте STL-файл.")
+        await callback.answer()
+        return
+
     total_volume = data["volume"] * data["quantity"]
     price = total_volume * PRICES[tech]
 
     await callback.message.answer(
-        f"✅ Технология: {tech}\n📦 Объём: {total_volume:.2f} см³\n💰 Цена: {price:.2f} грн"
+        f"✅ Технология: {tech}
+📦 Объём: {total_volume:.2f} см³
+💰 Цена: {price:.2f} грн"
     )
 
     append_order_row({
@@ -135,6 +122,7 @@ async def handle_technology(callback: CallbackQuery):
     })
 
     await callback.answer()
+
 
 # ========== Webhook запуск ==========
 
@@ -176,30 +164,3 @@ web.run_app(app, host="0.0.0.0", port=10000)
 
 
 
-
-
-@dp.message(F.text.lower() == "/цены")
-async def show_prices(message: Message):
-    kb = InlineKeyboardBuilder()
-    for tech in PRICES:
-        kb.button(text=f"{tech} ({PRICES[tech]} грн/см³)", callback_data=f"editprice_{tech}")
-    kb.adjust(1)
-    await message.answer("Выберите технологию для изменения цены:", reply_markup=kb.as_markup())
-
-@dp.callback_query(F.data.startswith("editprice_"))
-async def edit_price_prompt(callback: CallbackQuery):
-    tech = callback.data.split("_")[1]
-    price_change_state[callback.from_user.id] = tech
-    await callback.message.answer(f"Введите новую цену для технологии <b>{tech}</b> (текущая: {PRICES[tech]} грн/см³):")
-    await callback.answer()
-
-@dp.message(lambda m: m.from_user.id in price_change_state)
-async def set_new_price(message: Message):
-    tech = price_change_state.pop(message.from_user.id)
-    try:
-        new_price = float(message.text.replace(",", "."))
-        update_price(tech, new_price)
-        PRICES[tech] = new_price
-        await message.answer(f"✅ Цена для <b>{tech}</b> обновлена: {new_price} грн/см³")
-    except ValueError:
-        await message.answer("❌ Введите число. Попробуйте снова командой /цены.")
