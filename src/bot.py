@@ -15,6 +15,8 @@ from aiohttp import web
 from dotenv import load_dotenv
 
 from renderer import render_model_screenshot
+# render_model_screenshot(filename, screenshot_path)
+screenshot_path = "stub.png"  # или заглушка
 from gsheet import append_order_row
 import trimesh
 
