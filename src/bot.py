@@ -71,7 +71,7 @@ async def handle_model(message: Message):
             "volume": volume,
             "screenshot": screenshot_path}
 
-        await message.answer_photo(FSInputFile(path_or_bytesio=screenshot_path, filename="screenshot.png"), caption=f"📦 Объем модели: {volume:.2f} см³")
+        await message.answer_photo(FSInputFile(screenshot_path, filename="screenshot.png"), caption=f"📦 Объем модели: {volume:.2f} см³")
         await message.answer("Сколько копий нужно?")
     except Exception as e:
         logging.exception(e)
