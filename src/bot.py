@@ -131,7 +131,6 @@ async def create_app():
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)
 
-    # Регистрируем /webhook !!!
     SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=WEBHOOK_PATH)
     setup_application(app, dp)
     return app
