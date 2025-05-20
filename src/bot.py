@@ -48,7 +48,8 @@ async def cmd_start(message: Message):
     await message.answer("👋 Пришли STL-файл для расчёта 3D-печати.")
 
 @dp.message(F.document)
-async def handle_model(message: Message):
+async def handle_model(print(f"📥 Загружаем файл от {message.from_user.id}: {filename}")
+):
     user_id = message.from_user.id
     file = await bot.get_file(message.document.file_id)
     filename = f"temp/{uuid.uuid4()}.stl"
@@ -56,8 +57,15 @@ async def handle_model(message: Message):
     await bot.download_file(file.file_path, filename)
 
     try:
-        mesh = trimesh.load(filename)
-        volume = mesh.volume / 1000
+    mesh = trimesh.load(filename, force='mesh')
+    if not isinstance(mesh, trimesh.Trimesh):
+        raise ValueError("Загруженный файл не является mesh-объектом")
+    volume = mesh.volume / 1000
+except Exception as e:
+    logging.exception(e)
+    await message.answer("❌ Не удалось загрузить модель. Возможно, файл не является STL mesh.")
+    return
+
         screenshot_path = filename.replace('.stl', '.png')
         render_model_screenshot(filename, screenshot_path)
 
