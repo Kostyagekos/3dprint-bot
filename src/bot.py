@@ -111,6 +111,11 @@ async def handle_technology(callback: CallbackQuery):
 # ========== Webhook запуск ==========
 
 # ========== WEBHOOK сервер ==========
+async def on_startup(app):
+    await bot.set_webhook(f"{WEBHOOK_URL}{WEBHOOK_PATH}")
+
+async def on_shutdown(app):
+    await bot.delete_webhook()
 
 async def create_app():
     logging.basicConfig(level=logging.INFO)
