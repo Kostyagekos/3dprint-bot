@@ -28,10 +28,10 @@ bot = Bot(token=API_TOKEN, parse_mode=ParseMode.HTML)
 dp = Dispatcher(storage=MemoryStorage())
 
 PRICES = {
-    "FDM": 2.0,
-    "SLA": 5.0,
-    "SLS": 7.0,
-    "Projet 2500W": 10.0,
+    "FDM": 4.0,
+    "SLA": 40.0,
+    "SLS": 35.0,
+    "Projet 2500W": 1000.0,
 }
 
 user_data = {}
@@ -105,10 +105,8 @@ async def handle_technology(callback: CallbackQuery):
     price = total_volume * PRICES[tech]
 
     await callback.message.answer(
-        f"✅ Технология: {tech}
-📦 Объём: {total_volume:.2f} см³
-💰 Цена: {price:.2f} грн"
-    )
+    f"✅ Технология: {tech}\n📦 Объём: {total_volume:.2f} см³\n💰 Цена: {price:.2f} грн"
+)
 
     append_order_row({
         "user_id": user_id,
