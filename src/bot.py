@@ -1,3 +1,5 @@
+print("🔥 BOT.PY ЗАПУСТИЛСЯ")
+
 import os
 import sys
 sys.path.append(os.path.dirname(__file__))
@@ -125,6 +127,7 @@ async def on_shutdown(app):
     await bot.delete_webhook()
 
 async def create_app():
+    print("🟢 create_app() called")
     logging.basicConfig(level=logging.INFO)
     print("🟢 create_app() called")
 
@@ -143,6 +146,7 @@ async def create_app():
 print("🔥 __main__ section executing...")
 app = asyncio.run(create_app())
 web.run_app(app, host="0.0.0.0", port=10000)
+
 
 
 
