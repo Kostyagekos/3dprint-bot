@@ -110,11 +110,7 @@ async def handle_technology(callback: CallbackQuery):
 
 # ========== Webhook запуск ==========
 
-async def on_startup(app):
-    await bot.set_webhook(f"{WEBHOOK_URL}{WEBHOOK_PATH}")
-
-async def on_shutdown(app):
-    await bot.delete_webhook()
+# ========== WEBHOOK сервер ==========
 
 async def create_app():
     logging.basicConfig(level=logging.INFO)
@@ -124,10 +120,11 @@ async def create_app():
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)
 
-    SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=WEBHOOK_PATH)
+    SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path="/webhook")
     setup_application(app, dp)
     return app
 
 if __name__ == "__main__":
     app = asyncio.run(create_app())
     web.run_app(app, host="0.0.0.0", port=10000)
+
