@@ -1,37 +1,19 @@
-import os
-import datetime
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from dotenv import load_dotenv
-
-load_dotenv()
-
-SPREADSHEET_ID = os.getenv("GOOGLE_SHEET_ID")
-CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_JSON")
-
-def append_order_row(data):
-    credentials = service_account.Credentials.from_service_account_file(
-        CREDENTIALS_FILE,
-        scopes=["https://www.googleapis.com/auth/spreadsheets"]
-    )
-    service = build("sheets", "v4", credentials=credentials)
-    sheet = service.spreadsheets()
-
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    row = [
-        now,
-        data["user_id"],
-        data["model"],
-        data["technology"],
-        data["quantity"],
-        f"{data['volume']:.2f}",
-        f"{data['total_volume']:.2f}",
-        f"{data['price']:.2f}",
-        data["screenshot_url"]
-    ]
-    sheet.values().append(
-        spreadsheetId=SPREADSHEET_ID,
-        range="Заказы!A1",
-        valueInputOption="RAW",
-        body={"values": [row]}
-    ).execute()
+response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/aiogram/dispatcher/middlewares/error.py", line 25, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/aiogram/fsm/middleware.py", line 41, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/aiogram/dispatcher/dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, eve
